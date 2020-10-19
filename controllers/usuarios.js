@@ -7,10 +7,26 @@ const { generarJWT } = require("../helpers/jwt");
 /*=================== Lista de Usuarios ===========================*/
 /*=================================================================*/
 const getUsuarios = async (req, res) => {
-  //console.log("entro");
-  const usuarios = await Usuario.find({}, "nombre email role google");
-  res.json({ ok: true, usuarios, uid: req.uid });
+  const desde = Number(req.query.desde) || 0;
+  //console.log(desde);
+
+  const [usuarios, total] = await Promise.all([
+    Usuario.find({}, "nombre email role google img")
+      .skip(desde)
+      .limit(5),
+
+    Usuario.count(),
+  ]);
+
+  res.json({ ok: true, usuarios, uid: req.uid, total });
 };
+
+// const getUsuarios = async (req, res) => {
+//   //console.log("entro");
+//   const usuarios = await Usuario.find({}, "nombre email role google");
+//   res.json({ ok: true, usuarios, uid: req.uid });
+// };
+
 /*=================================================================*/
 /*=================== Crear Usuarios ==============================*/
 /*=================================================================*/
